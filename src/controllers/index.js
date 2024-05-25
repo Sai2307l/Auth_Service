@@ -1,5 +1,6 @@
-const { create } = require("./user-controller");
+const { create, signIn } = require("./user-controller");
 
 module.exports = {
   create,
+  signIn,
 };

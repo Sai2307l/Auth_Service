@@ -24,6 +24,7 @@ class UserService {
       return result;
     } catch (error) {
       console.log("Something went wrong in token creation");
+      throw { error };
     }
   }
 
@@ -33,6 +34,7 @@ class UserService {
       return result;
     } catch (error) {
       console.log("Something went wrong in token validation", error);
+      throw { error };
     }
   }
 
@@ -41,6 +43,24 @@ class UserService {
       return bcrypt.compareSync(userInputPlainPassword, encryptedPassword);
     } catch (error) {
       console.log("Something went wrong in password comparison");
+      throw { error };
+    }
+  }
+
+  async signIn(email, plainPassword) {
+    try {
+      const user = await this.userRepository.getUser(email);
+      const passwordMatch = this.checkPassword(plainPassword, user.Password);
+      if (!passwordMatch) {
+        console.log("Password doesn't match");
+        throw { error: "Incorrect Password" };
+      }
+
+      const newJWT = this.createToken({ email: user.email, id: user.id });
+      return newJWT;
+    } catch (error) {
+      console.log("Something went wrong in signIn");
+      throw { error };
     }
   }
 }
